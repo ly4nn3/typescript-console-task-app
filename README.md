@@ -22,6 +22,7 @@ This program is written in TypeScript and run with Node.js in the terminal.
 # Useful Websites
 
 - [TypeScript Error Codes](https://typescript.tv/errors/)
+- [TSX - Execute TypeScript code directly](https://tsx.is/typescript)
 
 # Future Work
 

@@ -6,6 +6,10 @@ import { Task } from "../models/Task.js";
 export class TaskManager {
     private tasks:Task[] = [];
 
+    /**
+     * Core CRUD operaations for tasks
+     */
+
     // Add new task to collection
     addTask(title: string, description?: string): Task {
         const task = new Task(title, description);
@@ -25,10 +29,37 @@ export class TaskManager {
         return false;
     }
 
+    // Update task by ID
+    updateTask(
+        id: number,
+        updates: {
+            title?: string;
+            description?: string;
+        }
+    ): boolean {
+        const task =this.findTask(id);
+
+        if (!task) return false;
+
+        if (updates.title !== undefined && updates.title.trim() !== "") {
+            task.title = updates.title;
+        }
+
+        if (updates.description !== undefined) {
+            task.description = updates.description;
+        }
+        task.updatedAt = new Date();
+        return true;
+    }
+
     // Find task by ID
     findTask(id: number): Task | undefined {
         return this.tasks.find(task => task.id === id);
     }
+
+    /**
+     * Task retrieval and display methods
+     */
 
     // Get all tasks
     getAllTasks(): Task[] {
@@ -46,61 +77,30 @@ export class TaskManager {
         return this.tasks.filter(task => !task.completed);
     }
 
-    // Mark as completed by ID
-    markAsCompleted(id: number): boolean {
+    /**
+     * Status management methods
+     */
+
+    // Toggle task completion status ny ID
+    toggleTaskCompletion(id: number): boolean {
         const task = this.findTask(id);
         
         if (task) {
-            task.markAsCompleted();
+            if (task.completed) {
+                task.markAsIncomplete();
+            } else {
+                task.markAsCompleted();
+            }
+
             return true;
         }
 
         return false;
     }
 
-    // Mark as incomplete by ID
-    markAsIncomplete(id: number): boolean {
-        const task = this.findTask(id);
-
-        if (task) {
-            task.markAsIncomplete();
-            return true;
-        }
-
-        return false;
-    }
-
-    // Display all tasks
-    listTasks(): void {
-        if (this.tasks.length === 0) {
-            console.log("📝 There are no tasks!");
-            return;
-        }
-
-        console.log("\n📝 All tasks:");
-        console.log("=".repeat(50));
-        this.tasks.forEach(task => {
-            console.log(task.toString());
-        });
-        console.log("=".repeat(50));
-        console.log(`Total: ${this.tasks.length} tasks\n`);
-    }
-
-    // Total number of tasks
-    getTaskCount(): string {
-        const taskCount = this.tasks.length;
-        return `Total: ${taskCount} tasks`;
-    }
-
-    // Clear all tasks
-    clearAllTasks(): void {
-        this.tasks = [];
-    }
-
-    // Set tasks (loading from file)
-    setTasks(tasks: Task[]): void {
-        this.tasks = tasks;
-    }
+    /**
+     * Utility methods
+     */
 
     // Get stats summary
     getStats(): {
@@ -114,4 +114,14 @@ export class TaskManager {
 
         return { total, completed, pending };
     }
+    // Clear all tasks
+    clearAllTasks(): void {
+        this.tasks = [];
+    }
+
+    // Set tasks (loading from file)
+    setTasks(tasks: Task[]): void {
+        this.tasks = tasks;
+    }
+
 }
