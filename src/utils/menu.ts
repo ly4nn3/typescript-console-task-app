@@ -1,6 +1,7 @@
 import { createInterface } from "readline/promises";
 import { stdin as input, stdout as output } from "process";
 import { TaskManager } from "../managers/TaskManager.js";
+import { FileService } from "../services/FileService.js";
 import { displayTask, displayStats } from '../utils/display.js';
 
 /**
@@ -9,10 +10,27 @@ import { displayTask, displayStats } from '../utils/display.js';
 export class Menu {
     private readline = createInterface({ input, output });
     private taskManager: TaskManager;
+    private fileService: FileService;
     private isRunning = true;
+    private hasUnsavedChanges = false;
 
     constructor() {
         this.taskManager = new TaskManager();
+        this.fileService = new FileService();
+        this.loadOnStartup();
+    }
+
+    private async loadOnStartup(): Promise<void> {
+        try {
+            const tasks = await this.fileService.loadTasks();
+
+            if (tasks.length > 0) {
+                this.taskManager.setTasks(tasks);
+                console.log(`📂 Loaded ${tasks.length} tasks from previous session`);
+            }
+        } catch (e) {
+            console.error("⚠️ Could not load saved tasks: ", e);
+        }
     }
 
     async start(): Promise<void> {
@@ -20,6 +38,15 @@ export class Menu {
 
         while (this.isRunning) {
             await this.showMenu();
+        }
+
+        // Save before exit if unsaved changes found
+        if (this.hasUnsavedChanges) {
+            const save = await this.readline.question("\n💾 Unsaved changes found. Save before exit? (y/n): ");
+
+            if (save.toLowerCase() === "y") {
+                await this.saveTasks();
+            }
         }
 
         this.readline.close();
@@ -37,6 +64,10 @@ export class Menu {
         7. Remove task
         8. View statistics
         9. CLear all tasks
+        -----------------
+        S. Save tasks
+        L. Load tasks
+        B. Backup tasks
         0. Exit
         =================\n`;
 
@@ -73,6 +104,15 @@ export class Menu {
                     break;
                 case "9":
                     await this.clearAllTasks();
+                    break;
+                case "s":
+                    await this.saveTasks();
+                    break;
+                case "l":
+                    await this.loadTasks();
+                    break;
+                case "b":
+                    await this.backupTasks();
                     break;
                 case "0":
                     this.isRunning = false;
@@ -149,6 +189,49 @@ export class Menu {
         console.log(`\nTotal: ${tasks.length} pending task(s)`);
     }
 
+    private async saveTasks(): Promise<void> {
+        console.log("\n--- Save tasks ---\n");
+
+        try {
+            await this.fileService.saveTasks(this.taskManager);
+            this.hasUnsavedChanges = false;
+        } catch (e) {
+            console.error("❌ Failed to save tasks: ", e);
+        }
+    }
+
+    private async loadTasks(): Promise<void> {
+        console.log("\n--- Load tasks ---\n");
+
+        if (this.hasUnsavedChanges) {
+            const confirm = await this.readline.question("⚠️ Loading will overwrite unsaved changes. Continue? (y/n): ");
+
+            if (confirm.toLowerCase() !== "y") {
+                console.log("Load cancelled ❌");
+                return;
+            }
+        }
+
+        try {
+            const tasks = await this.fileService.loadTasks();
+            this.taskManager.setTasks(tasks);
+            this.hasUnsavedChanges = false;
+            console.log(`📂 Loaded ${tasks.length} tasks`);
+        } catch (e) {
+            console.error("❌ Failed to load tasks: ", e);
+        }
+    }
+
+    private async backupTasks(): Promise<void> {
+        console.log("\n--- Backup tasks ---\n");
+
+        try {
+            await this.fileService.backup();
+        } catch (e) {
+            console.error("❌ Failed to create backup: ", e);
+        }
+    }
+
     private async updateTask(): Promise<void> {
         console.log("\n--- Update task ---\n");
         const tasks = this.taskManager.getAllTasks();
@@ -198,6 +281,7 @@ export class Menu {
         if (success) {
             console.log("\n✨ Task updated!\n");
             displayTask(this.taskManager.findTask(taskId)!);
+            this.hasUnsavedChanges = true;
         } else {
             console.log("\nFailed to update task ❌\n");
         }
@@ -229,6 +313,7 @@ export class Menu {
             const status = task.completed ? "completed" : "incomplete";
             console.log(`\n✨ Task marked as ${status}!`);
             displayTask(task);
+            this.hasUnsavedChanges = true;
         } else {
             console.log("\nTask not found❌\n");
         }
@@ -270,6 +355,7 @@ export class Menu {
 
             if (success) {
                 console.log("\n🗑 Task removed!");
+                this.hasUnsavedChanges = true;
             }
         } else {
             console.log("\nRemoval cancelled.");
@@ -297,6 +383,7 @@ export class Menu {
         if (confirm.toLowerCase() === "yes") {
             this.taskManager.clearAllTasks();
             console.log("\nAll tasks cleared! 🧹");
+            this.hasUnsavedChanges = true;
         } else {
             console.log("\nClear all tasks cancelled.");
         }

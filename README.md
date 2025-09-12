@@ -23,11 +23,10 @@ This program is written in TypeScript and run with Node.js in the terminal.
 
 - [TypeScript Error Codes](https://typescript.tv/errors/)
 - [TSX - Execute TypeScript code directly](https://tsx.is/typescript)
+- [Node - File System](https://nodejs.org/api/fs.html)
 
 # Future Work
 
 Core implementations still needed:
-- File persistence with CSV serialization/deserialization
-- Async file operations using Node.js fs/promises
 - Comprehensive Jest unit testing suite
 - Enhanced error handling and input validation
