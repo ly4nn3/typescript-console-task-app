@@ -90,7 +90,7 @@ export class Task {
         const result: string[] = [];
         let current = "";
         let inQuotes = false;
-        let startedWithQuote = false;
+        let startedWithQuote;
 
         for (let i = 0; i < csvRow.length; i++) {
             const char = csvRow[i];
@@ -109,7 +109,7 @@ export class Task {
                     current += char;
                 }
             } else if (char === ";" && !inQuotes) {
-                result.push(current);
+                result.push(startedWithQuote ? current.trim() : current);
                 current = "";
                 startedWithQuote = false;
             } else {

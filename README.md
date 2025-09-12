@@ -23,7 +23,8 @@ This program is written in TypeScript and run with Node.js in the terminal.
 
 - [TypeScript Error Codes](https://typescript.tv/errors/)
 - [TSX - Execute TypeScript code directly](https://tsx.is/typescript)
-- [Node - File System](https://nodejs.org/api/fs.html)
+- [Node Documentation](https://nodejs.org/api/)
+- [Jest Configuration](https://jestjs.io/docs/configuration)
 
 # Future Work
 
