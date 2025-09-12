@@ -226,7 +226,7 @@ export class Menu {
 
         if (success) {
             const task = this.taskManager.findTask(taskId)!;
-            const status = task.completed ? "✔" : "○";
+            const status = task.completed ? "completed" : "incomplete";
             console.log(`\n✨ Task marked as ${status}!`);
             displayTask(task);
         } else {

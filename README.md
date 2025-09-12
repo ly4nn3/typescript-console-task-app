@@ -27,7 +27,6 @@ This program is written in TypeScript and run with Node.js in the terminal.
 # Future Work
 
 Core implementations still needed:
-- Recursive menu system for user interaction
 - File persistence with CSV serialization/deserialization
 - Async file operations using Node.js fs/promises
 - Comprehensive Jest unit testing suite
