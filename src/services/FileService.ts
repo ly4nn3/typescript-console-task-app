@@ -56,8 +56,8 @@ export class FileService {
 
             const content = await fileSystem.readFile(this.filePath, "utf-8");
             const lines = content.trim().split("\n");
-
-            if (lines.length === 0) {
+            
+            if (lines.length === 1 && lines[0] === "") {
                 return [];
             }
 

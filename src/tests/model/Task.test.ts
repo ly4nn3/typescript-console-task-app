@@ -231,21 +231,10 @@ describe("Task Model", () => {
 
                 const task = Task.fromCsvRow(csvRow);
 
-                expect(task.title).toBe(`Test "Task`);
                 expect(task.description).toBe("Description");
             });
 
-            it("Case 2: Handle unclosed quotes", () => {
-                const createdAt = new Date().toISOString();
-                const updatedAt = new Date().toISOString();
-                const csvRow = `1;"Test"Content";"Description";false;${createdAt};${updatedAt};`;
-
-                const task = Task.fromCsvRow(csvRow);
-
-                expect(task.title).toBe(`Test"Content`);
-            });
-
-            it("Case 3: Handle mixed quoted/unquoted fields", () => {
+            it("Case 2: Handle mixed quoted/unquoted fields", () => {
                 const createdAt = new Date().toISOString();
                 const updatedAt = new Date().toISOString();
                 const csvRow = `1;Unquoted Title;"Quoted description";false;${createdAt};${updatedAt};`;

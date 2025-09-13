@@ -105,8 +105,6 @@ export class Task {
                     i++;
                 } else if (inQuotes && (nextChar === ';' || nextChar === undefined)) {
                     inQuotes = false;
-                } else if (inQuotes) {
-                    current += char;
                 }
             } else if (char === ";" && !inQuotes) {
                 result.push(startedWithQuote ? current.trim() : current);

@@ -29,5 +29,4 @@ This program is written in TypeScript and run with Node.js in the terminal.
 # Future Work
 
 Core implementations still needed:
-- Comprehensive Jest unit testing suite
 - Enhanced error handling and input validation

@@ -302,4 +302,4 @@ describe("TaskManager", () => {
             expect(taskManager.getAllTasks()).toHaveLength(0);
         });
     });
-})
+});
