@@ -1,23 +1,43 @@
 import { Task } from "../models/Task.js";
 
 /**
- * Task Manager, handles task operations for adding, removing, and updating.
+ * Task Manager - Manages a collection of tasks.
+ * 
+ * Responsibilities:
+ * - Core CRUD operations
+ * - Querying tasks (completed, pending, all)
+ * - Toggle task status
+ * - Utility functions (stats, clearing, setting/loading)
  */
 export class TaskManager {
+    /** Internal list of all managed tasks */
     private tasks:Task[] = [];
 
     /**
-     * Core CRUD operaations for tasks
+     * -------------------------------
+     * Core CRUD Operations for Tasks
+     * -------------------------------
      */
 
-    // Add new task to collection
+    /**
+     * Create new task and add to collection.
+     * 
+     * @param title - Short title of task
+     * @param description - Optional detailed explanation
+     * @returns New created Task instance
+     */
     addTask(title: string, description?: string): Task {
         const task = new Task(title, description);
         this.tasks.push(task);
         return task;
     }
 
-    // Remove task by ID
+    /**
+     * Remove a task from collection by ID.
+     * 
+     * @param id - Unique ID of the task
+     * @returns True if task found and removed (false otherwise)
+     */
     removeTask(id: number): boolean {
         const index = this.tasks.findIndex(task => task.id === id);
 
@@ -29,7 +49,14 @@ export class TaskManager {
         return false;
     }
 
-    // Update task by ID
+    /**
+     * Update task attributes by task ID.
+     * 
+     * @param id - Unique Id of the task
+     * @param updates - Object containing optional new values:
+     *                  `{ title?: string. description?: string }`
+     * @returns True if updated successfully (false if task not found)
+     */
     updateTask(
         id: number,
         updates: {
@@ -39,8 +66,9 @@ export class TaskManager {
     ): boolean {
         const task =this.findTask(id);
 
-        if (!task) return false;
+        if (!task) return false; // Task not found
 
+        // Only update if valid non-empty values provided
         if (updates.title !== undefined && updates.title.trim() !== "") {
             task.title = updates.title;
         }
@@ -48,40 +76,64 @@ export class TaskManager {
         if (updates.description !== undefined) {
             task.description = updates.description;
         }
+
+        // Refresh modification timestamp
         task.updatedAt = new Date();
+
         return true;
     }
 
-    // Find task by ID
+    /**
+     * Retrieve task by ID.
+     * 
+     * @param id - Unique ID of the task
+     * @returns Found Task object (undefined if not found)
+     */
     findTask(id: number): Task | undefined {
         return this.tasks.find(task => task.id === id);
     }
 
     /**
-     * Task retrieval and display methods
+     * --------------------------
+     * Task Retrieval & Filtering
+     * --------------------------
      */
 
-    // Get all tasks
+    /**
+     * Retrieve shallow copy of all tasks.
+     * 
+     * @returns New array containing all tasks
+     *          (prevents external mutations of internal state)
+     */
     getAllTasks(): Task[] {
-        // Copying as array to prevent mutation
         return [...this.tasks];
     }
 
-    // Get only completed tasks
+    /** Retrieve only completed tasks */
     getCompletedTasks(): Task[] {
         return this.tasks.filter(task => task.completed);
     }
 
-    // Get pending tasks (incomplete)
+    /** Retrieve only pending (incomplete) tasks */
     getPendingTasks(): Task[] {
         return this.tasks.filter(task => !task.completed);
     }
 
     /**
-     * Status management methods
+     * -----------------
+     * Status Management
+     * -----------------
      */
 
-    // Toggle task completion status ny ID
+    /**
+     * Toggle completion status of task by ID.
+     * 
+     * - If task is complete, mark as incomplete
+     * - If task is incomple, mark as completed
+     * 
+     * @param id - Unique ID of the task
+     * @returns True if task found and toggled (false otherwise)
+     */
     toggleTaskCompletion(id: number): boolean {
         const task = this.findTask(id);
         
@@ -99,10 +151,16 @@ export class TaskManager {
     }
 
     /**
-     * Utility methods
+     * ---------------
+     * Utility Methods
+     * ---------------
      */
 
-    // Get stats summary
+    /**
+     * Get summary of task statistics
+     * 
+     * @returns Object with `total`, `completed`, `pending` counts
+     */
     getStats(): {
         total: number;
         completed: number;
@@ -114,12 +172,19 @@ export class TaskManager {
 
         return { total, completed, pending };
     }
-    // Clear all tasks
+    
+    /**
+     * Remove all tasks from collection.
+     */
     clearAllTasks(): void {
         this.tasks = [];
     }
 
-    // Set tasks (loading from file)
+    /**
+     * Replace internal tasks collection (load from storage).
+     * 
+     * @param tasks - Array of Task objects to set
+     */
     setTasks(tasks: Task[]): void {
         this.tasks = tasks;
     }

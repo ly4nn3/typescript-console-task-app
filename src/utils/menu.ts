@@ -5,7 +5,14 @@ import { FileService } from "../services/FileService.js";
 import { displayTask, displayStats } from '../utils/display.js';
 
 /**
- * Menu class to handle user interactions through CLI
+ * Menu class - handles CLI interactions with the user.
+ * 
+ * Responsibilities:
+ * - Start the CLI menu loop
+ * - Provide options for managing tasks (add, remove, update...)
+ * - Handle persistence (save/load/backup)
+ * - Confirmations for descturctive actions
+ * - Track unsaved changes
  */
 export class Menu {
     private readline = createInterface({ input, output });
@@ -20,6 +27,7 @@ export class Menu {
         this.loadOnStartup();
     }
 
+    /** Load tasks automatically on startup from file storage. */
     private async loadOnStartup(): Promise<void> {
         try {
             const tasks = await this.fileService.loadTasks();
@@ -33,6 +41,7 @@ export class Menu {
         }
     }
 
+    /** Start interactive CLI menu loop. */
     async start(): Promise<void> {
         console.log("\n📖 Welcome to Task Manager\n");
 
@@ -40,7 +49,7 @@ export class Menu {
             await this.showMenu();
         }
 
-        // Save before exit if unsaved changes found
+        // Ask to save before exiting if unsaved changes exist
         if (this.hasUnsavedChanges) {
             const save = await this.readline.question("\n💾 Unsaved changes found. Save before exit? (y/n): ");
 
@@ -49,10 +58,12 @@ export class Menu {
             }
         }
 
+        // Close input stream when exiting
         this.readline.close();
-        console.log("\n🙋‍♀️ Bye! 🙋‍♂️\n");
+        console.log("\n👋 Goodbye!\n");
     }
 
+    /** Display menu options and handle user choice. */
     private async showMenu(): Promise<void> {
         const menuOptions = `=== MAIN MENU ===
         1. Add task
@@ -129,11 +140,22 @@ export class Menu {
         }
     }
 
+    /**
+     * Pause execution until user presses Enter.
+     * Clears console afterward.
+     */
     private async pause(): Promise<void> {
         await this.readline.question("\nPress Enter to continue...");
         console.clear();
     }
 
+    /**
+     * -------------------
+     * Menu Action Methods
+     * -------------------
+     */
+
+    /** Add new task by prompting user for title and optional description */
     private async addTask(): Promise<void> {
         console.log("\n--- Add new task ---\n");
         const title = await this.readline.question("Enter a title: ");
@@ -150,6 +172,7 @@ export class Menu {
         displayTask(task);
     }
 
+    /** View all tasks (display empty message if none exist). */
     private viewAllTasks(): void {
         console.log("\n--- All tasks ---\n");
         const tasks = this.taskManager.getAllTasks();
@@ -163,6 +186,7 @@ export class Menu {
         console.log(`\nTotal: ${tasks.length} task(s)`);
     }
 
+    /** Show only completed tasks. */
     private viewCompletedTasks(): void {
         console.log("\n--- Completed tasks ---\n");
         const tasks = this.taskManager.getCompletedTasks();
@@ -176,6 +200,7 @@ export class Menu {
         console.log(`\nTotal: ${tasks.length} completed task(s)`);
     }
 
+    /** Show only pending (incomplete) tasks. */
     private viewPendingTasks(): void {
         console.log("\n--- Pending tasks ---\n");
         const tasks = this.taskManager.getPendingTasks();
@@ -189,6 +214,7 @@ export class Menu {
         console.log(`\nTotal: ${tasks.length} pending task(s)`);
     }
 
+    /** Save tasks to CSV file. */
     private async saveTasks(): Promise<void> {
         console.log("\n--- Save tasks ---\n");
 
@@ -200,6 +226,7 @@ export class Menu {
         }
     }
 
+    /** Load tasks from CSV file (with confirmation if unsaved changes exist). */
     private async loadTasks(): Promise<void> {
         console.log("\n--- Load tasks ---\n");
 
@@ -222,6 +249,7 @@ export class Menu {
         }
     }
 
+    /** Backup current save file by creating timestamped copy. */
     private async backupTasks(): Promise<void> {
         console.log("\n--- Backup tasks ---\n");
 
@@ -232,6 +260,7 @@ export class Menu {
         }
     }
 
+    /** Update task title.description by ID. */
     private async updateTask(): Promise<void> {
         console.log("\n--- Update task ---\n");
         const tasks = this.taskManager.getAllTasks();
@@ -287,6 +316,7 @@ export class Menu {
         }
     }
 
+    /** Toggle completetion status of task by ID. */
     private async toggleTaskCompletion(): Promise<void> {
         console.log("\n--- Toggle task completion ---\n");
         const tasks = this.taskManager.getAllTasks();
@@ -319,6 +349,7 @@ export class Menu {
         }
     }
 
+    /** Remove task permanently by ID (with confirmation). */
     private async removeTask(): Promise<void> {
         console.log("\n--- Remove task ---\n");
         const tasks = this.taskManager.getAllTasks();
@@ -362,12 +393,14 @@ export class Menu {
         }
     }
 
+    /** Display stats summary. */
     private viewStats(): void {
         console.log("\n--- Task statistics ---\n");
         const stats = this.taskManager.getStats();
         displayStats(stats);
     }
 
+    /** Clear all tasks (with double confirmation). */
     private async clearAllTasks(): Promise<void> {
         console.log("\n--- Clear all tasks ---\n");
         const stats = this.taskManager.getStats();

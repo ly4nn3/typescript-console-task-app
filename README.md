@@ -7,13 +7,14 @@ The purpose for writing this software was to gain hands-on experience with TypeS
 - How classes and interfaces create better code organization
 - How TypeScript's async/await syntax improves upon JavaScript's promise handling.
 
-This project serves as a practical demonstration of moving from JavaScript to TypeScript development.
+This project serves as a practical demonstration of moving from JavaScript to TypeScript development, and my understanding of TypeScript syntax such as type annotations, interfaces, and generics.
 
 [Software Demo Video - In progress]()
 
 # Development Environment
 
-- This project was developed using: - Visual Studio Code as my code editor
+This project was developed using:
+- Visual Studio Code as my code editor
 - Git for version control
 - GitHub for remote hosting
 
@@ -28,5 +29,8 @@ This program is written in TypeScript and run with Node.js in the terminal.
 
 # Future Work
 
-Core implementations still needed:
-- Enhanced error handling and input validation
+Planned enhancements:
+- Menu length and readability
+- Add due dates to tasks
+- Code refactoring for modularity
+- Refactor menu to support submenus
