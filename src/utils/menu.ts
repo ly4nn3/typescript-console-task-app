@@ -84,7 +84,7 @@ export class Menu {
 
         console.log(menuOptions);
 
-        const choice = await this.readline.question("Choose an option (1 - 6): ")
+        const choice = await this.readline.question("Choose an option: ")
         console.log("");
 
         try {

@@ -9,7 +9,7 @@ The purpose for writing this software was to gain hands-on experience with TypeS
 
 This project serves as a practical demonstration of moving from JavaScript to TypeScript development, and my understanding of TypeScript syntax such as type annotations, interfaces, and generics.
 
-[Software Demo Video - In progress]()
+[Software Demo Video](https://youtu.be/n5lVuyjWX4A)
 
 # Development Environment
 
